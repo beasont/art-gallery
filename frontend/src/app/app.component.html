@@ -1,0 +1,31 @@
+<div class="app-header">
+  <h1>Art Gallery Project looool</h1>
+  <div class="ip-info">
+  </div>
+  <button (click)="toggleComments()">Show Most Recent Comments</button>
+</div>
+
+<div *ngIf="showComments" class="comments-panel">
+  <h2>Recent Comments</h2>
+  <div *ngIf="recentComments.length === 0">No comments found.</div>
+  <ul>
+    <li *ngFor="let c of recentComments">
+      <!-- We'll assume we have to guess if it's user or guest by checking if c.username=Guest or some field later -->
+      <strong [ngClass]="{'comment-user-guest': (c.username==='Guest'), 'comment-user-registered': (c.username!=='Guest')}">
+        {{ c.username }}
+      </strong>
+      <span class="comment-art-reference">
+        on {{ c.artTitle || 'Unknown Title' }} by {{ c.artArtist || 'Unknown Artist' }}:
+      </span>
+      {{ c.text }} <em>({{ c.createdAt }})</em>
+      
+      <!-- Example Delete/Edit Buttons -->
+      <div *ngIf="c.username!=='Guest'">
+        <button (click)="deleteComment(c)">Delete</button>
+        <button (click)="editComment(c)">Edit</button>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<router-outlet></router-outlet>

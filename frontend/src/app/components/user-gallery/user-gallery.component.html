@@ -1,0 +1,95 @@
+<div class="user-gallery-page">
+  <h2>User Gallery</h2>
+
+  <button class="draw-btn" (click)="openDrawingWindow()">Draw something!</button>
+
+  <!-- If no userArtworks show a message -->
+  <div *ngIf="userArtworks.length === 0">
+    <p>No user artworks have been submitted.</p>
+    <p>
+      Would you like to upload something?
+      <a href="#" (click)="toggleUploadForm($event)">Click here!</a>
+    </p>
+  </div>
+  <div *ngIf="userArtworks.length > 0">
+    <button (click)="toggleUploadForm()">Submit your own artwork</button>
+  </div>
+
+  <!-- Upload form -->
+  <div class="upload-form" *ngIf="showUploadForm">
+    <h3>Upload New Artwork</h3>
+    <input type="file" (change)="handleFileInput($event)" accept="image/*" />
+    <input type="text" [(ngModel)]="titleInput" placeholder="Title" />
+    <input type="text" [(ngModel)]="artistInput" placeholder="Artist" />
+    <input type="number" [(ngModel)]="artYearInput" placeholder="Year" />
+    <button (click)="uploadNewArt()">Upload</button>
+  </div>
+
+  <div *ngIf="userArtworks.length > 0" class="controls">
+    <label>Sort by:</label>
+    <select [(ngModel)]="sortKey" (change)="onSortKeyChange(sortKey)">
+      <option value="title">By Title</option>
+      <option value="artist">By Author</option>
+      <option value="artYear">By Year</option>
+    </select>
+    <button (click)="toggleOrder()">{{ sortOrderAsc ? 'Asc' : 'Desc' }}</button>
+
+    <label>Filter by Artist:</label>
+    <select [(ngModel)]="selectedArtist" (change)="onArtistChange()">
+      <option value="All">All</option>
+      <option *ngFor="let a of artists" [value]="a">{{ a }}</option>
+    </select>
+
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Search..." />
+    <button (click)="onSearch()">Search</button>
+  </div>
+
+  <div *ngIf="userArtworks.length > 0" class="grid-container">
+    <div class="grid-item" *ngFor="let art of userArtworks; index as i">
+      <img [src]="art.imageUrl" [alt]="art.title" />
+      <h4>{{ art.title }}</h4>
+      <p>Artist: {{ art.artist }}</p>
+      <p>Year: {{ art.artYear }}</p>
+      <button (click)="openCommentForm(i)">
+        {{ showCommentFormIndex === i ? 'Cancel' : 'Add Comment' }}
+      </button>
+      <div class="comment-form" *ngIf="showCommentFormIndex === i">
+        <div>
+          <label><input type="radio" name="cm{{i}}" [(ngModel)]="commentMode" value="GUEST" checked>Guest</label>
+          <label><input type="radio" name="cm{{i}}" [(ngModel)]="commentMode" value="USER">User</label>
+        </div>
+        <input type="text" placeholder="Username" [(ngModel)]="commentUsername" *ngIf="commentMode==='USER'">
+        <input type="password" placeholder="Password" [(ngModel)]="commentPassword" *ngIf="commentMode==='USER'">
+        <textarea placeholder="Your comment" [(ngModel)]="commentText"></textarea>
+        <button (click)="submitComment(i)">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button [routerLink]="['/gallery']">Main Carousel</button>
+    <button [routerLink]="['/gallery/all']">View All Main Artworks</button>
+  </div>
+</div>
+
+<!-- The drawing window -->
+<div class="drawing-window" *ngIf="drawingOpen">
+  <div class="drawing-header">
+    <span><strong>Draw Something!</strong></span>
+    <div>
+      <button (click)="saveDrawing()">Save</button>
+      <button (click)="resetDrawing()">Reset</button>
+      <button (click)="closeDrawingWindow()">X</button>
+    </div>
+  </div>
+  <div>
+    <button (click)="setMode('pencil')">Pencil</button>
+    <button (click)="setMode('eraser')">Eraser</button>
+  </div>
+  <canvas class="drawing-canvas" #drawingCanvas
+    width="600" height="340"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseLeave()"></canvas>
+</div>

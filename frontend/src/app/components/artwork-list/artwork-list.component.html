@@ -1,0 +1,17 @@
+<div class="gallery-container">
+  <!-- Button to toggle gallery visibility -->
+  <button (click)="toggleGallery()">
+    {{ galleryVisible ? 'Close the Gallery' : 'Open the Gallery' }}
+  </button>
+
+  <!-- Conditionally display the gallery -->
+  <div *ngIf="galleryVisible" class="gallery">
+    <h2>Art Gallery</h2>
+    <div *ngFor="let artwork of artworks" class="artwork-item">
+      <h3>{{ artwork.title }} by {{ artwork.artist }}</h3>
+      <img [src]="artwork.imageUrl" alt="{{ artwork.title }}" style="max-width: 300px; height: auto;" />
+      <p>URL: {{ artwork.imageUrl }}</p> <!-- Show the URL for debugging -->
+    </div>
+  </div>
+</div>
+

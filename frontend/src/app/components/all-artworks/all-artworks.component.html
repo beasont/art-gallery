@@ -1,0 +1,44 @@
+<div class="all-artworks-page">
+  <h2>All Artworks</h2>
+
+  <div class="controls">
+    <label>Sort by:</label>
+    <select [(ngModel)]="sortKey" (change)="onSortKeyChange(sortKey)">
+      <option value="title">By Title</option>
+      <option value="artist">By Author</option>
+      <option value="year">By Year</option>
+    </select>
+    <button (click)="toggleOrder()">{{ sortOrderAsc ? 'Asc' : 'Desc' }}</button>
+
+    <label>Filter By Artist:</label>
+    <select [(ngModel)]="selectedArtist" (change)="onArtistChange()">
+      <option value="All">All</option>
+      <option *ngFor="let a of artists" [value]="a">{{ a }}</option>
+    </select>
+
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Search..." />
+    <button (click)="onSearch()">Search</button>
+  </div>
+
+  <div class="grid-container">
+    <div class="art-tile" *ngFor="let art of artworks; index as i">
+      <img [src]="art.imageUrl" [alt]="art.title" (click)="openNewTab(art)"/>
+      <h4>{{ art.title }}</h4>
+      <p>Artist: {{ art.artist }}</p>
+      <p>Year: {{ art.year }}</p>
+      <button (click)="openCommentForm(i)">
+        {{ showCommentFormIndex === i ? 'Cancel' : 'Add Comment' }}
+      </button>
+      <div class="comment-form" *ngIf="showCommentFormIndex === i">
+        <input type="text" placeholder="Name (optional)" [(ngModel)]="commentUsername" />
+        <textarea placeholder="Your comment" [(ngModel)]="commentText"></textarea>
+        <button (click)="submitComment(i)">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button [routerLink]="['/gallery']">Back to Main Carousel</button>
+    <button [routerLink]="['/gallery/user']">User Gallery</button>
+  </div>
+</div>

@@ -1,0 +1,234 @@
+
+:root {
+  --matrix-green: #18FF0F;
+  --ufo-cyan: #00FFFF;
+  --dark-bg: #0B0B0B;
+  --light-bg: #1C1C1C;
+  --panel-bg: #262626;
+  --text-color: #CFCFCF;
+  --header-bg1: #06AF06;
+  --header-bg2: #00CC66;
+  --btn-hover-shadow: 0 0 20px rgba(24,255,15,0.6);
+  --glow-blue: #00AAFF;
+  --danger-red: #FF5757;
+  --pitch-black: #000000;
+  --neon-green: #4EFF3C;
+  --guest-white: #FFFFFF;
+  --header-text-shadow: 0 0 5px rgba(0,255,0,0.8);
+  --emboss-highlight: rgba(255,255,255,0.1);
+  --emboss-shadow: rgba(0,0,0,0.5);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--dark-bg);
+  color: var(--text-color);
+  font-family: "Courier New", monospace, sans-serif;
+}
+
+/* HEADERS / TOP BAR */
+.app-header {
+  background: linear-gradient(90deg, var(--header-bg1), var(--header-bg2));
+  padding: 10px 20px;
+  box-shadow: 0 0 15px rgba(0,255,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #000;
+}
+.app-header h1 {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: bold;
+  text-shadow: var(--header-text-shadow);
+  color: #000;
+}
+.app-header .ip-info {
+  font-size: 0.9rem;
+  color: #000;
+  background: rgba(255,255,255,0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-shadow: 0 0 3px rgba(255,255,255,0.8);
+}
+
+/* Fancy 3D/Emboss using pseudo elements */
+.app-header, .comments-panel, .all-artworks-page, .user-gallery-page, .carousel-page {
+  position: relative;
+}
+.app-header::before,
+.comments-panel::before,
+.all-artworks-page::before,
+.user-gallery-page::before,
+.carousel-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, var(--emboss-highlight), var(--emboss-shadow));
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* LINKS / BUTTONS / INPUTS */
+a {
+  color: var(--ufo-cyan);
+  text-decoration: none;
+}
+a:hover { color: var(--matrix-green); }
+
+button {
+  background: var(--matrix-green);
+  color: #000;
+  border: 1px solid #00FF00;
+  border-radius: 6px;
+  padding: 7px 14px;
+  margin: 3px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-weight: bold;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--btn-hover-shadow);
+}
+button:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+input, textarea, select {
+  background: var(--light-bg);
+  color: var(--text-color);
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-family: inherit;
+  margin: 3px 0;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 8px var(--ufo-cyan);
+}
+
+/* PANELS / LAYOUT */
+.comments-panel,
+.all-artworks-page,
+.user-gallery-page,
+.carousel-page {
+  background-color: var(--light-bg);
+  border: 2px solid #111;
+  border-radius: 8px;
+  margin: 20px;
+  padding: 15px;
+  box-shadow: 0 0 15px rgba(0,255,0,0.2);
+  animation: fadein 0.7s ease;
+}
+@keyframes fadein {
+  from {opacity:0; transform: scale(0.96);}
+  to {opacity:1; transform: scale(1);}
+}
+.panel-heading {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  color: var(--neon-green);
+  text-shadow: 0 0 3px var(--neon-green);
+  border-bottom: 1px solid #444;
+  padding-bottom: 5px;
+}
+
+/* RECENT COMMENTS */
+.comments-panel {
+  /* pitch black background for the container */
+  background: var(--pitch-black) !important;
+}
+.comments-panel h2 {
+  color: var(--neon-green);
+  margin-top: 0;
+  text-shadow: 0 0 4px var(--neon-green);
+}
+.comments-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.comments-panel li {
+  margin-bottom: 10px;
+  background: rgba(0,255,0,0.06);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Guest vs. user name coloring */
+.comment-user-guest {
+  color: var(--guest-white) !important; /* white for guest */
+}
+.comment-user-registered {
+  color: var(--glow-blue) !important; /* neon blue for user */
+}
+
+/* For the "on [Title by Artist]" text => also neon green. */
+.comment-art-reference {
+  color: var(--matrix-green);
+}
+
+/* TILES, GRID, ETC. */
+.grid-container, .gallery-container {
+  display: grid;
+  gap: 15px;
+}
+.grid-container {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.art-tile, .grid-item {
+  background: #111;
+  border: 2px solid #222;
+  border-radius: 6px;
+  text-align: center;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0,255,0,0.1);
+}
+.art-tile img, .grid-item img {
+  max-width: 100%;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+.art-tile h4, .grid-item h4 {
+  color: var(--ufo-cyan);
+  margin: 6px 0;
+}
+
+/* HEADINGS: use neon green text shadow */
+.all-artworks-page h2,
+.user-gallery-page h2,
+.carousel-page h2 {
+  color: var(--neon-green);
+  text-shadow: 0 0 4px var(--neon-green);
+  margin-top: 0;
+}
+
+/* Nav area */
+.nav {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Comment forms */
+.comment-form {
+  background: #222;
+  border: 1px solid #444;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+.radio-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.radio-group label {
+  cursor: pointer;
+}

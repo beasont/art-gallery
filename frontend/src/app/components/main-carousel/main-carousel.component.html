@@ -1,0 +1,51 @@
+<div class="carousel-page">
+  <h2 class="page-title">Gallery Carousel</h2>
+  <div class="sort-controls">
+    <label>Sort by:</label>
+    <select [(ngModel)]="sortKey" (change)="onSortKeyChange(sortKey)">
+      <option value="title">By Title</option>
+      <option value="artist">By Author</option>
+      <option value="year">By Year</option>
+    </select>
+    <button (click)="toggleOrder()">{{ sortOrderAsc ? 'Asc' : 'Desc' }}</button>
+  </div>
+
+  <div class="carousel-wrapper" *ngIf="artworks.length > 0">
+    <!-- Neon green 3D arrow left -->
+    <button (click)="prevImage()" class="arrow-btn left-arrow">
+      &#9668;
+    </button>
+
+    <div class="image-container">
+      <img [src]="artworks[currentIndex].imageUrl"
+           alt="art"
+           (click)="openNewTab(artworks[currentIndex])"/>
+    </div>
+
+    <!-- Neon green 3D arrow right -->
+    <button (click)="nextImage()" class="arrow-btn right-arrow">
+      &#9658;
+    </button>
+  </div>
+
+  <div class="art-info" *ngIf="artworks.length > 0">
+    <h3>{{ artworks[currentIndex].title }}</h3>
+    <p><strong>Artist:</strong> {{ artworks[currentIndex].artist }}</p>
+    <p><strong>Year:</strong> {{ artworks[currentIndex].year }}</p>
+  </div>
+
+  <!-- Comment button & form -->
+  <div>
+    <button (click)="toggleCommentForm()">Add Comment</button>
+    <div class="comment-form" *ngIf="showCommentForm">
+      <input type="text" placeholder="Name (optional)" [(ngModel)]="commentUsername" />
+      <textarea placeholder="Your comment" [(ngModel)]="commentText"></textarea>
+      <button (click)="submitComment()">Submit</button>
+    </div>
+  </div>
+
+  <div class="navigation-buttons">
+    <button [routerLink]="['/gallery/all']">View All Artworks</button>
+    <button [routerLink]="['/gallery/user']">User Gallery</button>
+  </div>
+</div>
