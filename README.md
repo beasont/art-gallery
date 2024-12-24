@@ -2,51 +2,54 @@
 
 ## Overview
 ### Purpose
-This project aims to provide users with an interactive and intuitive way to explore, contribute, and engage with a comprehensive collection of famous artworks. The user may also upload and interact with their own submitted artworks, or even use a custom widget to draw something and save it to the user gallery.
+The Art Gallery Project offers an engaging and interactive platform for exploring a vast collection of famous artworks. Users can contribute their own creations, comment on existing works, or even use an intuitive drawing tool to save custom art directly into the gallery.
 
 ### Key Features
 1. **Gallery Browsing**
-   - Extensive Collection
-   - Interactive Carousel
-   - Sorting and Filtering
-   - Responsive Design
+   - Extensive and dynamic collection of famous artworks
+   - Interactive carousel for seamless navigation
+   - Sorting and filtering options for personalized exploration
+   - Fully responsive design for desktop and mobile devices
 
 2. **Commenting System**
-   - Guest and Registered Users
-   - Secure Comment Management
-   - Real-time Updates
-   - Moderation Tools
+   - Supports both guest and registered users
+   - Secure and efficient comment management
+   - Real-time updates for a smooth user experience
+   - Moderation tools for maintaining community integrity
 
 3. **User Gallery**
-   - Artwork Upload
-   - Drawing Widget
-   - Editable Submissions
-   - Community Engagement
+   - Simple and fast artwork upload
+   - Editable submissions for customization
+   - Interactive drawing widget for unique creations
+   - Community-focused features to encourage engagement
 
-4. **Random Artwork Discovery**
-   - Surprise Element
-   - Enhanced User Experience
+4. **Random Artwork Button**
+   - Picks a random piece from the 59 available artworks
+   - Offers an easy way to explore diverse art
 
 5. **Drawing Feature**
-   - Intuitive Interface
-   - Save and Share
-   - Customization
+   - Easy-to-use interface for creating original art
+   - Save and share creations to the interface
+
+---
 
 ## Application Architecture
 ### Backend
-The backend of the Art Gallery Project is built using Spring Boot, providing a robust foundation for handling all server-side operations.
+The backend leverages Spring Boot for a robust, efficient, and secure architecture, handling server-side operations seamlessly.
 
 Key Components:
-- **Spring Data JPA**
-- **Spring Web**
-- **Spring Security**
-- **Maven Wrapper**
+- **Spring Data JPA** for efficient database interactions
+- **Spring Web** for building RESTful APIs
+- **Spring Security** for authentication and authorization
+- **Maven Wrapper** for simplified dependency management
 
 ### Database
-The project leverages an H2 in-memory database for development and testing purposes.
+An H2 in-memory database is used for development and testing, providing quick and lightweight persistence.
 
 ### Frontend
-The frontend is developed using Angular, delivering a dynamic and responsive user interface.
+Developed with Angular, the frontend delivers a modern, dynamic, and responsive user experience.
+
+---
 
 ## Technologies Used
 - **Backend**
@@ -72,6 +75,8 @@ The frontend is developed using Angular, delivering a dynamic and responsive use
   - Postman
   - Docker (Optional)
 
+---
+
 ## REST API Documentation
 
 ### Overview
@@ -88,10 +93,13 @@ This API provides access to the Art Gallery application functionality, allowing 
 ### Comments API (/api/comments)
 - **POST /api/comments**
   - Adds a new comment to an artwork. Requires the `artId`, `text`, optional `username`, and optional `password` (for authenticated users). If no username is provided, the comment will be associated with a "Guest" account.
+
 - **POST /api/comments/update**
-  - Updates an existing comment. Requires the commentId, text, optional username, and optional password for authentication. This endpoint uses the HTTP POST method for updates.
+  - Updates an existing comment. Requires the `commentId`, `text`, optional `username`, and optional `password` for authentication. This endpoint uses the HTTP `POST` method for updates.
+
 - **POST /api/comments/delete**
-  - Deletes an existing comment. Requires the commentId, optional username, and optional password for authentication. This endpoint uses the HTTP POST method for deletions.  
+  - Deletes an existing comment. Requires the `commentId`, optional `username`, and optional `password` for authentication. This endpoint uses the HTTP `POST` method for deletions.
+
 - **GET /api/comments/recent**
   - Fetches the most recent comments from all artworks. Each comment returned includes details about the commenter, the associated artwork, and the date created.
 
@@ -100,18 +108,21 @@ This API provides access to the Art Gallery application functionality, allowing 
   - Retrieves all artworks submitted by users. This endpoint allows users to view their own contributions to the gallery.
 
 - **POST /api/user-art/upload**
-  - Uploads a new artwork submitted by a user. Requires the title, artist name, year, and image file. Optionally, it can include a username and password for authenticated submissions.
-  
+  - Uploads a new artwork submitted by a user. Requires the `title`, `artist` name, `year`, and `image` file. Optionally, it can include a `username` and `password` for authenticated submissions.
+
 - **PUT /api/user-art/edit**
-  - Updates an existing user-submitted artwork. Requires the unique artId and the new details (title, artist, year, and optional image file). Authentication is necessary to ensure user ownership. This endpoint uses the HTTP PUT method to conform to RESTful principles.
-  
+  - Updates an existing user-submitted artwork. Requires the unique `artId` and the new details (`title`, `artist`, `year`, and optional `image` file). Authentication is necessary to ensure user ownership. This endpoint uses the HTTP `PUT` method to conform to RESTful principles.
+
 - **DELETE /api/user-art/delete**
-  - Deletes a user-submitted artwork. Requires the artId, username, and password for authentication. Only the original uploader can delete their artwork. This endpoint uses the HTTP DELETE method to conform to RESTful principles.
+  - Deletes a user-submitted artwork. Requires the `artId`, `username`, and `password` for authentication. Only the original uploader can delete their artwork. This endpoint uses the HTTP `DELETE` method to conform to RESTful principles.
 
 ### Authentication and Security
-Some endpoints (such as comment addition and user art management) require authentication via username and hashed password to ensure that only authorized users can make modifications or deletions. Passwords are not stored in plain text; they are hashed for security.
+Some endpoints (such as comment addition and user art management) require authentication via `username` and hashed `password` to ensure that only authorized users can make modifications or deletions. Passwords are not stored in plain text; they are securely hashed.
+
+---
 
 ## Installation and Setup
+
 ### Prerequisites
 - Java Development Kit (JDK) 17 or Higher
 - Maven 3.9.9 or Higher
@@ -119,8 +130,8 @@ Some endpoints (such as comment addition and user art management) require authen
 - Git
 
 ### Bash Script
-- In the root directory, you will find the file **open_project.sh**
-- Simply run this bash script (./open_project.sh) in a GitBash terminal, and the entire site will be loaded.
+- In the root directory, you will find the file **open_project.sh**.
+- Simply run this bash script (`./open_project.sh`) in a Git Bash terminal, and the entire site will be loaded.
 
 ### Alternative Steps
 
