@@ -30,7 +30,7 @@
 
 ## Overview
 ### Purpose
-The Art Gallery Project is a comprehensive platform designed to offer users an engaging and interactive experience with a vast collection of renowned artworks. It serves as both a digital gallery for art enthusiasts to explore masterpieces and a creative space where users can contribute their own artworks, fostering a vibrant community of artists and art lovers.
+This project aims to provide users with an interactive and intuitive way to explore, contribute, and engage with a comprehensive collection of famous artworks. The user may also upload and interact with their own submitted artworks, or even use a custom widget to draw something and save it to the user gallery.
 
 ### Key Features
 1. **Gallery Browsing**
