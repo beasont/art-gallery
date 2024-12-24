@@ -30,7 +30,7 @@
 
 ## Overview
 ### Purpose
-The Art Gallery Project is a comprehensive platform designed to offer users an engaging and interactive experience with a vast collection of renowned artworks. It serves as both a digital gallery for art enthusiasts to explore masterpieces and a creative space where users can contribute their own artworks, fostering a vibrant community of artists and art lovers.
+This project aims to provide users with an interactive and intuitive way to explore, contribute, and engage with a comprehensive collection of famous artworks. The user may also upload and interact with their own submitted artworks, or even use a custom widget to draw something and save it to the user gallery.
 
 ### Key Features
 1. **Gallery Browsing**
@@ -101,19 +101,40 @@ The frontend is developed using Angular, delivering a dynamic and responsive use
   - Docker (Optional)
 
 ## REST API Documentation
+
+### Overview
+This API provides access to the Art Gallery application functionality, allowing users to retrieve artworks, submit comments, and manage user-submitted artworks. Below are the available endpoints for interaction.
+
 ### Artworks API (/api/artworks)
-- **GET /api/artworks**: Retrieves a list of all artworks in the main gallery.
+- **GET /api/artworks**
+  - Retrieves a comprehensive list of all artworks in the main gallery. Each artwork entry includes details such as title, artist, year of creation, and associated image URL.
 
 ### Proxy API (/api/proxy)
-- **GET /api/proxy?url={imageUrl}**: Proxies requests to external image URLs.
+- **GET /api/proxy?url={imageUrl}**
+  - Proxies requests to external image URLs. This allows for the retrieval of images without exposing the original source URLs, enhancing security and avoiding CORS issues.
 
 ### Comments API (/api/comments)
-- **POST /api/comments**: Adds a comment to an artwork.
-- **GET /api/comments/recent**: Fetches the most recent comments from all artworks.
+- **POST /api/comments**
+  - Adds a new comment to an artwork. Requires the `artId`, `text`, optional `username`, and optional `password` (for authenticated users). If no username is provided, the comment will be associated with a "Guest" account.
+  
+- **GET /api/comments/recent**
+  - Fetches the most recent comments from all artworks. Each comment returned includes details about the commenter, the associated artwork, and the date created.
 
 ### User Art API (/api/user-art)
-- **GET /api/user-art**: Retrieves all user-submitted artworks.
-- **POST /api/user-art/upload**: Uploads a new user artwork.
+- **GET /api/user-art**
+  - Retrieves all artworks submitted by users. This endpoint allows users to view their own contributions to the gallery.
+
+- **POST /api/user-art/upload**
+  - Uploads a new artwork submitted by a user. Requires the title, artist name, year, and image file. Optionally, it can include a username and password for authenticated submissions.
+  
+- **POST /api/user-art/edit**
+  - Updates an existing user-submitted artwork. Requires the unique `artId` and the new details. Authentication is necessary to ensure user ownership.
+  
+- **POST /api/user-art/delete**
+  - Deletes a user-submitted artwork. Requires the `artId`, `username`, and `password` for authentication. Only the original uploader can delete their artwork.
+
+### Authentication and Security
+Some endpoints (such as comment addition and user art management) require authentication via username and hashed password to ensure that only authorized users can make modifications or deletions. Passwords are not stored in plain text; they are hashed for security.
 
 ## Installation and Setup
 ### Prerequisites

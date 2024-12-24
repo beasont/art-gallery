@@ -41,7 +41,7 @@ export class UserGalleryComponent implements OnInit {
   editArtId: number | null = null;
   editTitle = '';
   editArtist = '';
-  editArtYear?: number;
+  editArtYear: number = 0; // Initialize with a valid default number
   editFileToUpload?: File;
   editUsername = ''; // For authentication
   editPassword = ''; // For authentication
@@ -192,18 +192,7 @@ export class UserGalleryComponent implements OnInit {
     this.editArtId = art.id;
     this.editTitle = art.title;
     this.editArtist = art.artist;
-    this.editArtYear = art.artYear;
-    this.editFileToUpload = undefined;
-    this.editUsername = '';
-    this.editPassword = '';
-  }
-
-  closeEditForm() {
-    this.editFormVisible = false;
-    this.editArtId = null;
-    this.editTitle = '';
-    this.editArtist = '';
-    this.editArtYear = undefined;
+    this.editArtYear = art.artYear || 0; // Default to 0 if undefined
     this.editFileToUpload = undefined;
     this.editUsername = '';
     this.editPassword = '';
@@ -217,14 +206,10 @@ export class UserGalleryComponent implements OnInit {
 
   submitEdit() {
     if (!this.editArtId || !this.editTitle || !this.editArtist || !this.editArtYear) {
-      alert('Please provide all required fields for editing.');
+      alert('Please complete all fields.');
       return;
     }
-    if (!this.editUsername.trim() || !this.editPassword.trim()) {
-      alert('Please provide your username and password to edit the artwork.');
-      return;
-    }
-  
+
     this.userArtService.editArt(
       this.editArtId,
       this.editTitle.trim(),
@@ -234,56 +219,46 @@ export class UserGalleryComponent implements OnInit {
       this.editUsername.trim(),
       this.editPassword.trim()
     ).subscribe({
-      next: (res) => {
-        console.log('Edit response:', res);
-        alert(res.message || 'Artwork edited successfully!');
+      next: (updatedArt) => {
+        const index = this.userArtworks.findIndex(art => art.id === this.editArtId);
+        if (index !== -1) {
+          this.userArtworks[index] = updatedArt;
+        }
+        alert('Artwork updated successfully!');
         this.closeEditForm();
-        this.fetchUserArt();
       },
       error: (err) => {
         console.error('Error editing artwork:', err);
-        if (err.message === 'UserArt not found') {
-          alert('Failed to edit artwork. Artwork not found.');
-        } else if (err.message === 'Incorrect username or password.') {
-          alert('Failed to edit artwork. Incorrect username or password.');
-        } else {
-          alert('Failed to edit artwork. Please try again later.');
-        }
+        alert('Failed to update artwork.');
       }
     });
   }
+
+  closeEditForm() {
+    this.editFormVisible = false;
+    this.editArtId = null;
+    this.editTitle = '';
+    this.editArtist = '';
+    this.editArtYear = 0;
+    this.editFileToUpload = undefined;
+    this.editUsername = '';
+    this.editPassword = '';
+  }
   
-
   // **Delete Artwork Methods**
-
   confirmDelete(art: UserArt) {
     if (!art.hashedPassword) {
       alert('This artwork was uploaded as a guest and cannot be deleted.');
       return;
     }
   
-    const confirmation = confirm(`Are you sure you want to delete the artwork "${art.title}" by ${art.artist}?`);
-    if (!confirmation) return;
+    const username = prompt("Enter your username to confirm deletion:")?.trim();
+    const password = prompt("Enter your password:")?.trim();
   
-    const usernameInput = prompt("Enter your username to confirm deletion:");
-    if (!usernameInput || !usernameInput.trim()) {
-      alert("Deletion aborted. Username is required.");
+    if (!username || !password) {
+      alert("Deletion aborted. Both username and password are required.");
       return;
     }
-  
-    const passwordInput = prompt("Enter your password:");
-    if (!passwordInput || !passwordInput.trim()) {
-      alert("Deletion aborted. Password is required.");
-      return;
-    }
-  
-    const username = usernameInput.trim();
-    const password = passwordInput.trim();
-  
-    // Optional: Add console logs for debugging
-    console.log(`Attempting to delete artwork with ID: ${art.id}`);
-    console.log(`Username: ${username}`);
-    console.log(`Password: ${password}`);
   
     this.userArtService.deleteArt(art.id, username, password).subscribe({
       next: (res) => {
@@ -293,17 +268,10 @@ export class UserGalleryComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error deleting artwork:', err);
-        if (err.message === 'Incorrect username or password.') {
-          alert('Failed to delete artwork. Incorrect username or password.');
-        } else if (err.message === 'UserArt not found') {
-          alert('Failed to delete artwork. Artwork not found.');
-        } else {
-          alert('Failed to delete artwork. Please try again later.');
-        }
+        alert(err.message || 'Failed to delete artwork. Please try again later.');
       }
     });
   }
-  
 
   // **Comment form methods**
   openCommentForm(i: number) {

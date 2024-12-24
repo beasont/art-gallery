@@ -58,45 +58,56 @@ export class UserArtService {
     file?: File,
     username?: string,
     password?: string
-  ): Observable<any> {
+): Observable<UserArt> {
     const formData = new FormData();
-    formData.append('artId', String(artId));
+    formData.append('artId', artId.toString());
     formData.append('title', title);
     formData.append('artist', artist);
-    formData.append('artYear', String(artYear));
+    formData.append('artYear', artYear.toString());
     if (file) {
-      formData.append('file', file);
+        formData.append('file', file);
     }
-  
-    formData.append('username', username || '');
-    formData.append('password', password || '');
-  
-    return this.http.post<Map<string, string>>(`${this.baseUrl}/edit`, formData).pipe(
-      catchError(this.handleError)
-    );
-  }  
+    if (username) {
+        formData.append('username', username);
+    }
+    if (password) {
+        formData.append('password', password);
+    }
 
+    return this.http.post<UserArt>('http://localhost:5443/api/user-art/edit', formData);
+}
+  
   deleteArt(artId: number, username: string, password: string): Observable<any> {
     const formData = new FormData();
     formData.append('artId', String(artId));
     formData.append('username', username);
     formData.append('password', password);
-    return this.http.post<Map<string, string>>(`${this.baseUrl}/delete`, formData).pipe(
+  
+    return this.http.post<any>(`${this.baseUrl}/delete`, formData).pipe(
       catchError(this.handleError)
     );
   }
+  
 
   // Handle HTTP Errors
   private handleError(error: HttpErrorResponse) {
+    if (error.status === 200 && typeof error.error.text === 'string') {
+      // Handle successful responses with text bodies
+      return throwError(() => new Error(error.error.text));
+    }
+  
     let errorMessage = 'An unknown error occurred!';
     if (error.error instanceof ErrorEvent) {
       // Client-side/network error
       errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // Backend returned unsuccessful response code
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.error.message || error.error}`;
+    } else if (error.error?.message) {
+      // Backend returned an error message
+      errorMessage = error.error.message;
     }
+  
     console.error(errorMessage);
-    return throwError(() => new Error(error.error.message || 'Something bad happened; please try again later.'));
+    return throwError(() => new Error(errorMessage));
   }
+  
+  
 }

@@ -38,6 +38,7 @@ start_services() {
   echo "=== Starting Angular dev server (frontend)... ==="
   pushd "$FRONTEND_DIR" >/dev/null 2>&1
   # Run ng serve in foreground (so we can see logs)
+  ng build
   ng serve --open
   # As soon as the ng serve ends, we proceed
   popd >/dev/null 2>&1
