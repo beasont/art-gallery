@@ -1,33 +1,5 @@
 # Art Gallery Project
 
-## Table of Contents
-- [Overview](#overview)
-- [Purpose](#purpose)
-- [Key Features](#key-features)
-- [Application Architecture](#application-architecture)
-  - [Backend](#backend)
-  - [Database](#database)
-  - [Frontend](#frontend)
-- [Technologies Used](#technologies-used)
-- [REST API Documentation](#rest-api-documentation)
-  - [Artworks API](#artworks-api)
-  - [Proxy API](#proxy-api)
-  - [Comments API](#comments-api)
-  - [User Art API](#user-art-api)
-- [Installation and Setup](#installation-and-setup)
-  - [Prerequisites](#prerequisites)
-  - [Steps](#steps)
-- [Usage](#usage)
-  - [Gallery Browsing](#gallery-browsing)
-  - [Commenting System](#commenting-system)
-  - [User Gallery](#user-gallery)
-  - [Random Artwork Discovery](#random-artwork-discovery)
-  - [Drawing Feature](#drawing-feature)
-  - [Security Features](#security-features)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-
 ## Overview
 ### Purpose
 This project aims to provide users with an interactive and intuitive way to explore, contribute, and engage with a comprehensive collection of famous artworks. The user may also upload and interact with their own submitted artworks, or even use a custom widget to draw something and save it to the user gallery.
@@ -146,7 +118,11 @@ Some endpoints (such as comment addition and user art management) require authen
 - Node.js and npm
 - Git
 
-### Steps
+### Bash Script
+- In the root directory, you will find the file **open_project.sh**
+- Simply run this bash script (./open_project.sh) in a GitBash terminal, and the entire site will be loaded.
+
+### Alternative Steps
 
 1. **Clone the Repository**
 ```bash
