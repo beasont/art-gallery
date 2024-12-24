@@ -24,7 +24,7 @@ The Art Gallery Project offers an engaging and interactive platform for explorin
    - Community-focused features to encourage engagement
 
 4. **Random Artwork Button**
-   - Picks a random piece from the 59 available artworks
+   - Picks a random piece from the 60 available artworks
    - Offers an easy way to explore diverse art
 
 5. **Drawing Feature**
