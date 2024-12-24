@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.Base64;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -38,8 +37,6 @@ public class UserArtController {
     }
 
     // Create / upload a new user artwork
-    // user might be guest => no password => hashedPassword = null
-    // if user => store hashed password => can later edit / delete
     @PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> uploadNewArt(
          @RequestParam("file") MultipartFile file,
@@ -73,10 +70,11 @@ public class UserArtController {
             userArt.setImageUrl(dataUri);
 
             if (username != null && !username.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
-                // store hashed
+                // Store hashed password
                 String hashed = hashPassword(password.trim());
                 userArt.setHashedPassword(hashed);
             } else {
+                // Guest upload; hashedPassword remains null
                 userArt.setHashedPassword(null);
             }
 
@@ -88,14 +86,16 @@ public class UserArtController {
         }
     }
 
-    // Edit / re-upload
-    // user must supply correct password if hashedPassword != null
+    // Edit / update an existing user artwork
     @PostMapping(value = "/edit", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> editArt(
          @RequestParam Long artId,
-         @RequestParam("file") MultipartFile file,
-         @RequestParam(required=false) String username,
-         @RequestParam(required=false) String password
+         @RequestParam String title,
+         @RequestParam String artist,
+         @RequestParam Integer artYear,
+         @RequestParam(required=false) MultipartFile file,
+         @RequestParam String username,
+         @RequestParam String password
     ) {
         try {
             Optional<UserArt> optional = userArtRepository.findById(artId);
@@ -103,30 +103,32 @@ public class UserArtController {
                 return new ResponseEntity<>("UserArt not found", HttpStatus.BAD_REQUEST);
             }
             UserArt userArt = optional.get();
-            if (userArt.getHashedPassword() == null) {
-                return new ResponseEntity<>("This artwork was uploaded by a guest. Cannot edit.", HttpStatus.FORBIDDEN);
-            }
-            if (username == null || password == null) {
-                return new ResponseEntity<>("Username + password required to edit.", HttpStatus.BAD_REQUEST);
-            }
-            // check password
-            String hashed = hashPassword(password.trim());
-            if (!hashed.equals(userArt.getHashedPassword())) {
-                return new ResponseEntity<>("Incorrect login.", HttpStatus.FORBIDDEN);
+
+            // Authenticate user
+            String hashedInput = hashPassword(password.trim());
+            if (userArt.getHashedPassword() == null || !hashedInput.equals(userArt.getHashedPassword())) {
+                return new ResponseEntity<>("Incorrect username or password.", HttpStatus.FORBIDDEN);
             }
 
-            String contentType = file.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
-                return new ResponseEntity<>("Only image/* allowed", HttpStatus.BAD_REQUEST);
+            // Update fields
+            userArt.setTitle(title);
+            userArt.setArtist(artist);
+            userArt.setArtYear(artYear);
+
+            if (file != null && !file.isEmpty()) {
+                String contentType = file.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    return new ResponseEntity<>("Only image/* allowed", HttpStatus.BAD_REQUEST);
+                }
+
+                byte[] fileBytes = file.getBytes();
+                String base64 = Base64.getEncoder().encodeToString(fileBytes);
+                String dataUri = "data:" + contentType + ";base64," + base64;
+                userArt.setImageUrl(dataUri);
             }
 
-            byte[] fileBytes = file.getBytes();
-            String base64 = Base64.getEncoder().encodeToString(fileBytes);
-            String dataUri = "data:" + contentType + ";base64," + base64;
-
-            userArt.setImageUrl(dataUri);
             userArtRepository.save(userArt);
-            return new ResponseEntity<>("Artwork updated!", HttpStatus.OK);
+            return new ResponseEntity<>("Artwork edited successfully!", HttpStatus.OK);
 
         } catch (NoSuchAlgorithmException ex) {
             return new ResponseEntity<>("Error hashing password", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -136,37 +138,40 @@ public class UserArtController {
     }
 
     // Delete user art
-    @PostMapping("/delete")
-    public ResponseEntity<?> deleteArt(
-        @RequestParam Long artId,
-        @RequestParam(required=false) String username,
-        @RequestParam(required=false) String password
-    ) {
-        try {
-            Optional<UserArt> optional = userArtRepository.findById(artId);
-            if (optional.isEmpty()) {
-                return new ResponseEntity<>("UserArt not found", HttpStatus.BAD_REQUEST);
-            }
-            UserArt userArt = optional.get();
-            // if guest => cannot delete
-            if (userArt.getHashedPassword() == null) {
-                return new ResponseEntity<>("This artwork was uploaded by a guest. Cannot delete.", HttpStatus.FORBIDDEN);
-            }
-            if (username == null || password == null) {
-                return new ResponseEntity<>("Username + password required to delete", HttpStatus.BAD_REQUEST);
-            }
-            String hashed = hashPassword(password.trim());
-            if (!hashed.equals(userArt.getHashedPassword())) {
-                return new ResponseEntity<>("Incorrect login.", HttpStatus.FORBIDDEN);
-            }
-
-            userArtRepository.delete(userArt);
-            return new ResponseEntity<>("UserArt deleted", HttpStatus.OK);
-
-        } catch (NoSuchAlgorithmException ex) {
-            return new ResponseEntity<>("Error hashing password", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch(Exception e) {
-            return new ResponseEntity<>("Delete error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+@PostMapping("/delete")
+public ResponseEntity<Map<String, String>> deleteArt(
+    @RequestParam Long artId,
+    @RequestParam String username,
+    @RequestParam String password
+) {
+    Map<String, String> response = new HashMap<>();
+    try {
+        Optional<UserArt> optional = userArtRepository.findById(artId);
+        if (optional.isEmpty()) {
+            response.put("message", "UserArt not found");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+        UserArt userArt = optional.get();
+
+        // Authenticate user
+        String hashedInput = hashPassword(password.trim());
+        if (userArt.getHashedPassword() == null || !hashedInput.equals(userArt.getHashedPassword())) {
+            response.put("message", "Incorrect username or password.");
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+        }
+
+        userArtRepository.delete(userArt);
+        response.put("message", "UserArt deleted successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    } catch (NoSuchAlgorithmException ex) {
+        response.put("message", "Error hashing password.");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    } catch(Exception e) {
+        response.put("message", "Delete error: " + e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+}
+
+    
 }

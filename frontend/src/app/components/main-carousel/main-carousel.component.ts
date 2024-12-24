@@ -37,10 +37,8 @@ export class MainCarouselComponent implements OnInit, AfterViewInit {
     this.fetchArtworks();
   }
 
-  // Force re-check or re-fetch once view is loaded
   ngAfterViewInit(): void {
-    // Some browsers or router configs can cause images not to appear on the first load.
-    // We'll do a quick sanity check or re-fetch:
+    // Re-fetch if necessary
     if (!this.artworks || this.artworks.length === 0) {
       this.fetchArtworks();
     }
@@ -101,6 +99,11 @@ export class MainCarouselComponent implements OnInit, AfterViewInit {
       (this.currentIndex + 1) % this.artworks.length;
   }
 
+  viewRandomArtwork() {
+    if (this.artworks.length === 0) return;
+    this.currentIndex = Math.floor(Math.random() * this.artworks.length);
+  }
+
   toggleCommentForm() {
     this.showCommentForm = !this.showCommentForm;
     this.commentUsername = '';
@@ -122,7 +125,6 @@ export class MainCarouselComponent implements OnInit, AfterViewInit {
       });
   }
 
-  // Opens image in new tab, no scrollbars, auto-resize
   openNewTab(art: Artwork) {
     const imageUrl = art.imageUrl;
     const newTab = window.open('', '_blank');
@@ -140,7 +142,7 @@ export class MainCarouselComponent implements OnInit, AfterViewInit {
               padding: 0;
               background-color: black;
               height: 100%;
-              overflow: hidden; /* no scrollbar */
+              overflow: hidden;
               display: flex;
               align-items: center;
               justify-content: center;

@@ -1,4 +1,3 @@
-
 :root {
   --matrix-green: #18FF0F;
   --ufo-cyan: #00FFFF;
@@ -231,4 +230,19 @@ input:focus, textarea:focus, select:focus {
 }
 .radio-group label {
   cursor: pointer;
+}
+
+/* Edit Form Modal */
+.edit-form-modal {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #f9f9f9;
+  border: 1px solid #aaa;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.edit-form-modal h3 {
+  margin-top: 0;
 }

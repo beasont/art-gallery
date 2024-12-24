@@ -147,8 +147,8 @@ public class CommentController {
     @PostMapping("/delete")
     public ResponseEntity<?> deleteComment(
         @RequestParam Long commentId,
-        @RequestParam(required=false) String username,
-        @RequestParam(required=false) String password
+        @RequestParam String username,
+        @RequestParam String password
     ) {
         try {
             Optional<Comment> optional = commentRepository.findById(commentId);
@@ -181,8 +181,8 @@ public class CommentController {
     public ResponseEntity<?> editComment(
         @RequestParam Long commentId,
         @RequestParam String newText,
-        @RequestParam(required=false) String username,
-        @RequestParam(required=false) String password
+        @RequestParam String username,
+        @RequestParam String password
     ) {
         try {
             Optional<Comment> optional = commentRepository.findById(commentId);
@@ -192,9 +192,6 @@ public class CommentController {
             Comment c = optional.get();
             if (c.getHashedPassword() == null) {
                 return new ResponseEntity<>("Cannot edit a Guest comment", HttpStatus.FORBIDDEN);
-            }
-            if (username == null || password == null) {
-                return new ResponseEntity<>("Username + password required", HttpStatus.BAD_REQUEST);
             }
             if (!c.getUsername().equalsIgnoreCase(username.trim())) {
                 return new ResponseEntity<>("Incorrect username for this comment", HttpStatus.FORBIDDEN);

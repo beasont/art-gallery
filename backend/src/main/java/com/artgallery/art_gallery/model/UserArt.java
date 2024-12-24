@@ -22,6 +22,7 @@ public class UserArt {
     @Lob
     private String imageUrl;
 
-    // If user is "guest", hashedPassword = null => cannot edit or delete
+    // Store hashed password to authenticate edits/deletions
+    // Nullable: null indicates a guest-uploaded artwork
     private String hashedPassword; 
 }

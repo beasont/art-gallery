@@ -10,7 +10,7 @@ interface CommentItem {
   createdAt: string;
   artTitle: string;
   artArtist: string;
-  isUser: boolean; // we use to highlight
+  isUser: boolean; // used to highlight
   artId: number;
 }
 
@@ -48,7 +48,8 @@ interface CommentItem {
 
     <router-outlet></router-outlet>
   `,
-  styles: [`
+  styles: [
+    `
     .app-header {
       background-color: #efefef;
       padding: 10px;
@@ -67,10 +68,10 @@ interface CommentItem {
     li {
       margin-bottom: 1em;
     }
-  `]
+    `
+  ]
 })
 export class AppComponent {
-  [x: string]: any;
   showComments = false;
   recentComments: CommentItem[] = [];
 

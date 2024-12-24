@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { UserArt, UserArtService } from '../../services/user-art.service';
+import { UserArtService, UserArt } from '../../services/user-art.service';
 import { ArtService } from '../../services/art.service';
 
 @Component({
@@ -24,17 +24,29 @@ export class UserGalleryComponent implements OnInit {
   showUploadForm = false;
   titleInput = '';
   artistInput = '';
-  artYearInput?: number; // renamed from 'yearInput'
+  artYearInput?: number;
   fileToUpload?: File;
+  uploadUsername = ''; // Optional Field
+  uploadPassword = ''; // Optional Field
 
-  // For comment
+  // Comment form
   showCommentFormIndex: number | null = null;
   commentUsername = '';
   commentText = '';
   commentMode = 'GUEST'; // 'GUEST' or 'USER'
   commentPassword = '';
 
-  // For "Draw something!" 
+  // Edit form
+  editFormVisible = false;
+  editArtId: number | null = null;
+  editTitle = '';
+  editArtist = '';
+  editArtYear?: number;
+  editFileToUpload?: File;
+  editUsername = ''; // For authentication
+  editPassword = ''; // For authentication
+
+  // Drawing feature
   drawingOpen = false;
   @ViewChild('drawingCanvas') drawingCanvas?: ElementRef<HTMLCanvasElement>;
   context!: CanvasRenderingContext2D | null;
@@ -136,19 +148,30 @@ export class UserGalleryComponent implements OnInit {
       return;
     }
 
+    // Username and password are optional
+    if ((this.uploadUsername && !this.uploadPassword) || (!this.uploadUsername && this.uploadPassword)) {
+      alert('Please provide both username and password, or leave both empty.');
+      return;
+    }
+
     this.userArtService.uploadArt(
       this.fileToUpload,
-      this.titleInput,
-      this.artistInput,
-      this.artYearInput
+      this.titleInput.trim(),
+      this.artistInput.trim(),
+      this.artYearInput,
+      this.uploadUsername.trim() || undefined,
+      this.uploadPassword.trim() || undefined
     ).subscribe({
       next: (newArt) => {
         alert('User Artwork uploaded!');
         this.showUploadForm = false;
+        // Reset form fields for next upload
         this.titleInput = '';
         this.artistInput = '';
         this.artYearInput = undefined;
         this.fileToUpload = undefined;
+        this.uploadUsername = '';
+        this.uploadPassword = '';
         this.fetchUserArt();
       },
       error: (err) => {
@@ -158,7 +181,131 @@ export class UserGalleryComponent implements OnInit {
     });
   }
 
-  // Comment form toggling
+  // **Edit Artwork Methods**
+
+  openEditForm(art: UserArt) {
+    if (!art.hashedPassword) {
+      alert('This artwork was uploaded as a guest and cannot be edited.');
+      return;
+    }
+    this.editFormVisible = true;
+    this.editArtId = art.id;
+    this.editTitle = art.title;
+    this.editArtist = art.artist;
+    this.editArtYear = art.artYear;
+    this.editFileToUpload = undefined;
+    this.editUsername = '';
+    this.editPassword = '';
+  }
+
+  closeEditForm() {
+    this.editFormVisible = false;
+    this.editArtId = null;
+    this.editTitle = '';
+    this.editArtist = '';
+    this.editArtYear = undefined;
+    this.editFileToUpload = undefined;
+    this.editUsername = '';
+    this.editPassword = '';
+  }
+
+  handleEditFileInput(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.editFileToUpload = event.target.files[0];
+    }
+  }
+
+  submitEdit() {
+    if (!this.editArtId || !this.editTitle || !this.editArtist || !this.editArtYear) {
+      alert('Please provide all required fields for editing.');
+      return;
+    }
+    if (!this.editUsername.trim() || !this.editPassword.trim()) {
+      alert('Please provide your username and password to edit the artwork.');
+      return;
+    }
+  
+    this.userArtService.editArt(
+      this.editArtId,
+      this.editTitle.trim(),
+      this.editArtist.trim(),
+      this.editArtYear,
+      this.editFileToUpload,
+      this.editUsername.trim(),
+      this.editPassword.trim()
+    ).subscribe({
+      next: (res) => {
+        console.log('Edit response:', res);
+        alert(res.message || 'Artwork edited successfully!');
+        this.closeEditForm();
+        this.fetchUserArt();
+      },
+      error: (err) => {
+        console.error('Error editing artwork:', err);
+        if (err.message === 'UserArt not found') {
+          alert('Failed to edit artwork. Artwork not found.');
+        } else if (err.message === 'Incorrect username or password.') {
+          alert('Failed to edit artwork. Incorrect username or password.');
+        } else {
+          alert('Failed to edit artwork. Please try again later.');
+        }
+      }
+    });
+  }
+  
+
+  // **Delete Artwork Methods**
+
+  confirmDelete(art: UserArt) {
+    if (!art.hashedPassword) {
+      alert('This artwork was uploaded as a guest and cannot be deleted.');
+      return;
+    }
+  
+    const confirmation = confirm(`Are you sure you want to delete the artwork "${art.title}" by ${art.artist}?`);
+    if (!confirmation) return;
+  
+    const usernameInput = prompt("Enter your username to confirm deletion:");
+    if (!usernameInput || !usernameInput.trim()) {
+      alert("Deletion aborted. Username is required.");
+      return;
+    }
+  
+    const passwordInput = prompt("Enter your password:");
+    if (!passwordInput || !passwordInput.trim()) {
+      alert("Deletion aborted. Password is required.");
+      return;
+    }
+  
+    const username = usernameInput.trim();
+    const password = passwordInput.trim();
+  
+    // Optional: Add console logs for debugging
+    console.log(`Attempting to delete artwork with ID: ${art.id}`);
+    console.log(`Username: ${username}`);
+    console.log(`Password: ${password}`);
+  
+    this.userArtService.deleteArt(art.id, username, password).subscribe({
+      next: (res) => {
+        console.log('Delete response:', res);
+        alert(res.message || 'Artwork deleted successfully!');
+        this.fetchUserArt();
+      },
+      error: (err) => {
+        console.error('Error deleting artwork:', err);
+        if (err.message === 'Incorrect username or password.') {
+          alert('Failed to delete artwork. Incorrect username or password.');
+        } else if (err.message === 'UserArt not found') {
+          alert('Failed to delete artwork. Artwork not found.');
+        } else {
+          alert('Failed to delete artwork. Please try again later.');
+        }
+      }
+    });
+  }
+  
+
+  // **Comment form methods**
   openCommentForm(i: number) {
     this.showCommentFormIndex = (this.showCommentFormIndex === i) ? null : i;
     this.commentUsername = '';
@@ -169,46 +316,30 @@ export class UserGalleryComponent implements OnInit {
 
   submitComment(i: number) {
     const art = this.userArtworks[i];
-    let artId = art.id;
+    const artId = art.id;
 
-    // send via ArtService
-    const formData = new FormData();
-    formData.append('artId', String(artId));
-    formData.append('text', this.commentText);
-    if (this.commentMode === 'USER') {
-      // user => send username + password
-      formData.append('username', this.commentUsername || 'User');
-      formData.append('password', this.commentPassword || '');
-    } else {
-      // guest => maybe no username
-    }
-
-    fetch('http://localhost:5443/api/comments', {
-      method: 'POST',
-      body: formData
-    })
-    .then(res => {
-      if(!res.ok) throw new Error("Error adding comment");
-      return res.text();
-    })
-    .then(txt => {
-      alert("Comment added: " + txt);
-      this.showCommentFormIndex = null;
-    })
-    .catch(err => {
-      console.error("Error adding comment:", err);
-      alert("Failed to add comment.");
+    // For guest-uploaded artworks, no username/password is needed
+    this.artService.addCommentWithUserOption(
+      artId,
+      this.commentText.trim(),
+      this.commentMode === 'USER' ? this.commentUsername.trim() : undefined,
+      this.commentMode === 'USER' ? this.commentPassword.trim() : undefined
+    ).subscribe({
+      next: () => {
+        alert('Comment added!');
+        this.showCommentFormIndex = null;
+      },
+      error: (err) => {
+        console.error('Error adding comment:', err);
+        alert('Failed to add comment.');
+      }
     });
   }
 
-
-  // =========== DRAW SOMETHING FEATURE =============
-  drawingDataURL: string | null = null;
-  showDrawPrompt = false;
-
+  // **Drawing Feature Methods**
   openDrawingWindow() {
     this.drawingOpen = true;
-    // We'll wait a tick, then init the canvas
+    // Initialize the canvas after the view has rendered
     setTimeout(() => {
       if (this.drawingCanvas) {
         this.context = this.drawingCanvas.nativeElement.getContext('2d');
@@ -285,31 +416,56 @@ export class UserGalleryComponent implements OnInit {
 
   saveDrawing() {
     if(!this.context || !this.drawingCanvas) return;
-    // get data url
+    // Get data URL
     const dataURL = this.drawingCanvas.nativeElement.toDataURL("image/png");
-    // prompt for title, author, date => then store in user gallery
-    const t = prompt("Enter Title:");
-    if(!t) { alert("Aborted."); return; }
-    const a = prompt("Enter Artist:");
-    if(!a) { alert("Aborted."); return; }
-    const y = prompt("Enter Year (number):");
-    if(!y) { alert("Aborted."); return; }
 
-    // We'll store a "file" in memory? We'll do a direct call to userArtService
-    // but we actually have a base64 data => can store it as a "file"? We'll do the same approach
-    // as normal upload but with a Blob.
+    // Prompt for title, author, date
+    const titleInput = prompt("Enter Title:");
+    if(!titleInput || !titleInput.trim()) { alert("Aborted. Title is required."); return; }
+    const title = titleInput.trim();
+
+    const artistInput = prompt("Enter Artist:");
+    if(!artistInput || !artistInput.trim()) { alert("Aborted. Artist is required."); return; }
+    const artist = artistInput.trim();
+
+    const yearInput = prompt("Enter Year (number):");
+    if(!yearInput || isNaN(Number(yearInput))) { alert("Invalid year. Aborted."); return; }
+    const year = parseInt(yearInput, 10);
+
+    // Convert dataURL to Blob
     const byteString = atob(dataURL.split(',')[1]);
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
     for(let i=0; i < byteString.length; i++){
       ia[i] = byteString.charCodeAt(i);
     }
+
     // Construct a file object
     const blob = new Blob([ia], {type: 'image/png'});
     const file = new File([blob], "canvasDrawing.png", {type: 'image/png'});
 
-    // now let's do the upload
-    this.userArtService.uploadArt(file, t, a, parseInt(y,10))
+    // Prompt for username and password for the drawing upload
+    const usernameInput = prompt("Enter your username for the drawing (leave blank to upload as Guest):");
+    const passwordInput = usernameInput ? prompt("Enter your password:") : '';
+
+    // Validate credentials
+    if ((usernameInput && !passwordInput) || (!usernameInput && passwordInput)) {
+      alert("Please provide both username and password, or leave both empty.");
+      return;
+    }
+
+    const username = usernameInput ? usernameInput.trim() : undefined;
+    const password = passwordInput ? passwordInput.trim() : undefined;
+
+    // Proceed with upload
+    this.userArtService.uploadArt(
+      file,
+      title,
+      artist,
+      year,
+      username || undefined,
+      password || undefined
+    )
     .subscribe({
       next: (newArt) => {
         alert('User Artwork saved from drawing!');

@@ -11,7 +11,7 @@
   </div>
 
   <div class="carousel-wrapper" *ngIf="artworks.length > 0">
-    <!-- Neon green 3D arrow left -->
+    <!-- arrow left -->
     <button (click)="prevImage()" class="arrow-btn left-arrow">
       &#9668;
     </button>
@@ -22,7 +22,7 @@
            (click)="openNewTab(artworks[currentIndex])"/>
     </div>
 
-    <!-- Neon green 3D arrow right -->
+    <!-- arrow right -->
     <button (click)="nextImage()" class="arrow-btn right-arrow">
       &#9658;
     </button>
@@ -32,6 +32,11 @@
     <h3>{{ artworks[currentIndex].title }}</h3>
     <p><strong>Artist:</strong> {{ artworks[currentIndex].artist }}</p>
     <p><strong>Year:</strong> {{ artworks[currentIndex].year }}</p>
+  </div>
+
+  <!-- Random Artwork Button -->
+  <div class="random-artwork">
+    <button (click)="viewRandomArtwork()">View Random Artwork</button>
   </div>
 
   <!-- Comment button & form -->

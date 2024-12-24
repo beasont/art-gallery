@@ -20,8 +20,6 @@ public class Comment {
     // If "User" selected, store hashed password. If "Guest", this can be null or empty.
     private String hashedPassword;
 
-    // We’ll store which "type" of art: "main" or "user" or null
-    // Alternatively, we try to see if "artId" is found in Art or in UserArt.
-    // We'll keep a field for clarity:
+    // We’ll store which "type" of art: "MAIN" or "USER"
     private String artSource; // "MAIN" or "USER"
 }

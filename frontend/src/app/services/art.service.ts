@@ -12,7 +12,7 @@ export class ArtService {
   constructor(private http: HttpClient) {}
 
   getArtworks(): Observable<any> {
-    return this.http.get(this.baseUrl);
+    return this.http.get(`${this.baseUrl}`);
   }
 
   // Add a quick wrapper so main-carousel can call it
@@ -36,7 +36,7 @@ export class ArtService {
     if (password) {
       formData.append('password', password);
     }
-    return this.http.post(this.commentUrl, formData);
+    return this.http.post(`${this.commentUrl}`, formData);
   }
 
   // For comment Deletion
@@ -48,6 +48,7 @@ export class ArtService {
     return this.http.post(`${this.commentUrl}/delete`, formData);
   }
 
+  // For comment Editing
   editComment(commentId: number, newText: string, username?: string, password?: string): Observable<any> {
     const formData = new FormData();
     formData.append('commentId', String(commentId));

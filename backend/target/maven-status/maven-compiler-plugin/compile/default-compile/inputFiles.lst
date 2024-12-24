@@ -9,6 +9,7 @@ C:\Users\MASTER\Documents\VCS\art-gallery\backend\src\main\java\com\artgallery\a
 C:\Users\MASTER\Documents\VCS\art-gallery\backend\src\main\java\com\artgallery\art_gallery\service\MetMuseumService.java
 C:\Users\MASTER\Documents\VCS\art-gallery\backend\src\main\java\com\artgallery\art_gallery\config\RestTemplateConfig.java
 C:\Users\MASTER\Documents\VCS\art-gallery\backend\src\main\java\com\artgallery\art_gallery\dto\CommentDto.java
+C:\Users\MASTER\Documents\VCS\art-gallery\backend\src\main\java\com\artgallery\art_gallery\service\UserArtService.java
 C:\Users\MASTER\Documents\VCS\art-gallery\backend\src\main\java\com\artgallery\art_gallery\repository\ArtRepository.java
 C:\Users\MASTER\Documents\VCS\art-gallery\backend\src\main\java\com\artgallery\art_gallery\controller\ArtController.java
 C:\Users\MASTER\Documents\VCS\art-gallery\backend\src\main\java\com\artgallery\art_gallery\model\UserArt.java

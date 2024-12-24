@@ -18,10 +18,12 @@
   <!-- Upload form -->
   <div class="upload-form" *ngIf="showUploadForm">
     <h3>Upload New Artwork</h3>
-    <input type="file" (change)="handleFileInput($event)" accept="image/*" />
-    <input type="text" [(ngModel)]="titleInput" placeholder="Title" />
-    <input type="text" [(ngModel)]="artistInput" placeholder="Artist" />
-    <input type="number" [(ngModel)]="artYearInput" placeholder="Year" />
+    <input type="file" (change)="handleFileInput($event)" accept="image/*" required />
+    <input type="text" [(ngModel)]="titleInput" placeholder="Title" required />
+    <input type="text" [(ngModel)]="artistInput" placeholder="Artist" required />
+    <input type="number" [(ngModel)]="artYearInput" placeholder="Year" required />
+    <input type="text" [(ngModel)]="uploadUsername" placeholder="Username (optional)" />
+    <input type="password" [(ngModel)]="uploadPassword" placeholder="Password (optional)" />
     <button (click)="uploadNewArt()">Upload</button>
   </div>
 
@@ -58,38 +60,57 @@
           <label><input type="radio" name="cm{{i}}" [(ngModel)]="commentMode" value="GUEST" checked>Guest</label>
           <label><input type="radio" name="cm{{i}}" [(ngModel)]="commentMode" value="USER">User</label>
         </div>
-        <input type="text" placeholder="Username" [(ngModel)]="commentUsername" *ngIf="commentMode==='USER'">
-        <input type="password" placeholder="Password" [(ngModel)]="commentPassword" *ngIf="commentMode==='USER'">
-        <textarea placeholder="Your comment" [(ngModel)]="commentText"></textarea>
+        <input type="text" placeholder="Username" [(ngModel)]="commentUsername" *ngIf="commentMode==='USER'" />
+        <input type="password" placeholder="Password" [(ngModel)]="commentPassword" *ngIf="commentMode==='USER'" />
+        <textarea placeholder="Your comment" [(ngModel)]="commentText" required></textarea>
         <button (click)="submitComment(i)">Submit</button>
       </div>
+
+      <!-- **Edit and Delete Buttons** -->
+      <div class="art-actions">
+        <button (click)="openEditForm(art)" *ngIf="art.hashedPassword">Edit</button>
+        <button (click)="confirmDelete(art)" *ngIf="art.hashedPassword">Delete</button>
+      </div>
+
+      <!-- **Edit Form Modal** -->
+      <div class="edit-form-modal" *ngIf="editFormVisible && editArtId === art.id">
+        <h3>Edit Artwork</h3>
+        <input type="text" [(ngModel)]="editTitle" placeholder="Title" required />
+        <input type="text" [(ngModel)]="editArtist" placeholder="Artist" required />
+        <input type="number" [(ngModel)]="editArtYear" placeholder="Year" required />
+        <input type="file" (change)="handleEditFileInput($event)" accept="image/*" />
+        <input type="text" [(ngModel)]="editUsername" placeholder="Username" required />
+        <input type="password" [(ngModel)]="editPassword" placeholder="Password" required />
+        <button (click)="submitEdit()">Submit</button>
+        <button (click)="closeEditForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="nav">
+      <button [routerLink]="['/gallery']">Main Carousel</button>
+      <button [routerLink]="['/gallery/all']">View All Main Artworks</button>
     </div>
   </div>
 
-  <div class="nav">
-    <button [routerLink]="['/gallery']">Main Carousel</button>
-    <button [routerLink]="['/gallery/all']">View All Main Artworks</button>
-  </div>
-</div>
-
-<!-- The drawing window -->
-<div class="drawing-window" *ngIf="drawingOpen">
-  <div class="drawing-header">
-    <span><strong>Draw Something!</strong></span>
+  <!-- The drawing window -->
+  <div class="drawing-window" *ngIf="drawingOpen">
+    <div class="drawing-header">
+      <span><strong>Draw Something!</strong></span>
+      <div>
+        <button (click)="saveDrawing()">Save</button>
+        <button (click)="resetDrawing()">Reset</button>
+        <button (click)="closeDrawingWindow()">X</button>
+      </div>
+    </div>
     <div>
-      <button (click)="saveDrawing()">Save</button>
-      <button (click)="resetDrawing()">Reset</button>
-      <button (click)="closeDrawingWindow()">X</button>
+      <button (click)="setMode('pencil')">Pencil</button>
+      <button (click)="setMode('eraser')">Eraser</button>
     </div>
+    <canvas class="drawing-canvas" #drawingCanvas
+      width="600" height="340"
+      (mousedown)="onMouseDown($event)"
+      (mousemove)="onMouseMove($event)"
+      (mouseup)="onMouseUp()"
+      (mouseleave)="onMouseLeave()"></canvas>
   </div>
-  <div>
-    <button (click)="setMode('pencil')">Pencil</button>
-    <button (click)="setMode('eraser')">Eraser</button>
-  </div>
-  <canvas class="drawing-canvas" #drawingCanvas
-    width="600" height="340"
-    (mousedown)="onMouseDown($event)"
-    (mousemove)="onMouseMove($event)"
-    (mouseup)="onMouseUp()"
-    (mouseleave)="onMouseLeave()"></canvas>
 </div>
