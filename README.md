@@ -116,7 +116,10 @@ This API provides access to the Art Gallery application functionality, allowing 
 ### Comments API (/api/comments)
 - **POST /api/comments**
   - Adds a new comment to an artwork. Requires the `artId`, `text`, optional `username`, and optional `password` (for authenticated users). If no username is provided, the comment will be associated with a "Guest" account.
-  
+- **POST /api/comments/update**
+  - Updates an existing comment. Requires the commentId, text, optional username, and optional password for authentication. This endpoint uses the HTTP POST method for updates.
+- **POST /api/comments/delete**
+  - Deletes an existing comment. Requires the commentId, optional username, and optional password for authentication. This endpoint uses the HTTP POST method for deletions.  
 - **GET /api/comments/recent**
   - Fetches the most recent comments from all artworks. Each comment returned includes details about the commenter, the associated artwork, and the date created.
 
@@ -127,11 +130,11 @@ This API provides access to the Art Gallery application functionality, allowing 
 - **POST /api/user-art/upload**
   - Uploads a new artwork submitted by a user. Requires the title, artist name, year, and image file. Optionally, it can include a username and password for authenticated submissions.
   
-- **POST /api/user-art/edit**
-  - Updates an existing user-submitted artwork. Requires the unique `artId` and the new details. Authentication is necessary to ensure user ownership.
+- **PUT /api/user-art/edit**
+  - Updates an existing user-submitted artwork. Requires the unique artId and the new details (title, artist, year, and optional image file). Authentication is necessary to ensure user ownership. This endpoint uses the HTTP PUT method to conform to RESTful principles.
   
-- **POST /api/user-art/delete**
-  - Deletes a user-submitted artwork. Requires the `artId`, `username`, and `password` for authentication. Only the original uploader can delete their artwork.
+- **DELETE /api/user-art/delete**
+  - Deletes a user-submitted artwork. Requires the artId, username, and password for authentication. Only the original uploader can delete their artwork. This endpoint uses the HTTP DELETE method to conform to RESTful principles.
 
 ### Authentication and Security
 Some endpoints (such as comment addition and user art management) require authentication via username and hashed password to ensure that only authorized users can make modifications or deletions. Passwords are not stored in plain text; they are hashed for security.

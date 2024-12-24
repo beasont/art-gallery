@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -58,36 +58,33 @@ export class UserArtService {
     file?: File,
     username?: string,
     password?: string
-): Observable<UserArt> {
-    const formData = new FormData();
-    formData.append('artId', artId.toString());
-    formData.append('title', title);
-    formData.append('artist', artist);
-    formData.append('artYear', artYear.toString());
-    if (file) {
-        formData.append('file', file);
-    }
-    if (username) {
-        formData.append('username', username);
-    }
-    if (password) {
-        formData.append('password', password);
-    }
-
-    return this.http.post<UserArt>('http://localhost:5443/api/user-art/edit', formData);
-}
-  
-  deleteArt(artId: number, username: string, password: string): Observable<any> {
+  ): Observable<any> {
     const formData = new FormData();
     formData.append('artId', String(artId));
-    formData.append('username', username);
-    formData.append('password', password);
+    formData.append('title', title);
+    formData.append('artist', artist);
+    formData.append('artYear', String(artYear));
+    if (file) {
+      formData.append('file', file);
+    }
+    formData.append('username', username || '');
+    formData.append('password', password || '');
   
-    return this.http.post<any>(`${this.baseUrl}/delete`, formData).pipe(
+    return this.http.put<any>(`${this.baseUrl}/edit`, formData).pipe(
       catchError(this.handleError)
     );
   }
   
+  deleteArt(artId: number, username: string, password: string): Observable<any> {
+    const params = new HttpParams()
+      .set('artId', String(artId))
+      .set('username', username)
+      .set('password', password);
+  
+    return this.http.delete<any>(`${this.baseUrl}/delete`, { params }).pipe(
+      catchError(this.handleError)
+    );
+  }
 
   // Handle HTTP Errors
   private handleError(error: HttpErrorResponse) {

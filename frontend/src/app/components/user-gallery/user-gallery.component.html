@@ -3,7 +3,7 @@
 
   <button class="draw-btn" (click)="openDrawingWindow()">Draw something!</button>
 
-  <!-- If no userArtworks show a message -->
+  <!-- Message when there are no user artworks -->
   <div *ngIf="userArtworks.length === 0">
     <p>No user artworks have been submitted.</p>
     <p>
@@ -11,7 +11,9 @@
       <a href="#" (click)="toggleUploadForm($event)">Click here!</a>
     </p>
   </div>
-  <div *ngIf="userArtworks.length > 0">
+
+  <!-- Button to submit artwork -->
+  <div>
     <button (click)="toggleUploadForm()">Submit your own artwork</button>
   </div>
 
@@ -27,31 +29,15 @@
     <button (click)="uploadNewArt()">Upload</button>
   </div>
 
-  <div *ngIf="userArtworks.length > 0" class="controls">
-    <label>Sort by:</label>
-    <select [(ngModel)]="sortKey" (change)="onSortKeyChange(sortKey)">
-      <option value="title">By Title</option>
-      <option value="artist">By Author</option>
-      <option value="artYear">By Year</option>
-    </select>
-    <button (click)="toggleOrder()">{{ sortOrderAsc ? 'Asc' : 'Desc' }}</button>
-
-    <label>Filter by Artist:</label>
-    <select [(ngModel)]="selectedArtist" (change)="onArtistChange()">
-      <option value="All">All</option>
-      <option *ngFor="let a of artists" [value]="a">{{ a }}</option>
-    </select>
-
-    <input type="text" [(ngModel)]="searchTerm" placeholder="Search..." />
-    <button (click)="onSearch()">Search</button>
-  </div>
-
+  <!-- Grid of user artworks -->
   <div *ngIf="userArtworks.length > 0" class="grid-container">
     <div class="grid-item" *ngFor="let art of userArtworks; index as i">
       <img [src]="art.imageUrl" [alt]="art.title" />
       <h4>{{ art.title }}</h4>
       <p>Artist: {{ art.artist }}</p>
       <p>Year: {{ art.artYear }}</p>
+
+      <!-- Comment form -->
       <button (click)="openCommentForm(i)">
         {{ showCommentFormIndex === i ? 'Cancel' : 'Add Comment' }}
       </button>
@@ -66,13 +52,13 @@
         <button (click)="submitComment(i)">Submit</button>
       </div>
 
-      <!-- **Edit and Delete Buttons** -->
+      <!-- Edit and Delete Buttons -->
       <div class="art-actions">
         <button (click)="openEditForm(art)" *ngIf="art.hashedPassword">Edit</button>
         <button (click)="confirmDelete(art)" *ngIf="art.hashedPassword">Delete</button>
       </div>
 
-      <!-- **Edit Form Modal** -->
+      <!-- Edit Form Modal -->
       <div class="edit-form-modal" *ngIf="editFormVisible && editArtId === art.id">
         <h3>Edit Artwork</h3>
         <input type="text" [(ngModel)]="editTitle" placeholder="Title" required />
@@ -85,32 +71,11 @@
         <button (click)="closeEditForm()">Cancel</button>
       </div>
     </div>
-
-    <div class="nav">
-      <button [routerLink]="['/gallery']">Main Carousel</button>
-      <button [routerLink]="['/gallery/all']">View All Main Artworks</button>
-    </div>
   </div>
 
-  <!-- The drawing window -->
-  <div class="drawing-window" *ngIf="drawingOpen">
-    <div class="drawing-header">
-      <span><strong>Draw Something!</strong></span>
-      <div>
-        <button (click)="saveDrawing()">Save</button>
-        <button (click)="resetDrawing()">Reset</button>
-        <button (click)="closeDrawingWindow()">X</button>
-      </div>
-    </div>
-    <div>
-      <button (click)="setMode('pencil')">Pencil</button>
-      <button (click)="setMode('eraser')">Eraser</button>
-    </div>
-    <canvas class="drawing-canvas" #drawingCanvas
-      width="600" height="340"
-      (mousedown)="onMouseDown($event)"
-      (mousemove)="onMouseMove($event)"
-      (mouseup)="onMouseUp()"
-      (mouseleave)="onMouseLeave()"></canvas>
+  <!-- Navigation buttons -->
+  <div class="nav">
+    <button [routerLink]="['/gallery']">Main Carousel</button>
+    <button [routerLink]="['/gallery/all']">View All Main Artworks</button>
   </div>
 </div>

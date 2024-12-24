@@ -58,7 +58,7 @@ public class ArtController {
                "imageUrl", "http://localhost:5443/api/proxy?url=https://upload.wikimedia.org/wikipedia/commons/4/47/Last_judgement_Bosch.jpg"),
         Map.of("id", "15", "title", "Wanderer Above the Sea of Fog", "artist", "Caspar David Friedrich",
                "year", "1818",
-               "imageUrl", "http://localhost:5443/api/proxy?url=https://upload.wikimedia.org/wikipedia/commons/a/af/Caspar_David_Friedrich_-_Wanderer_above_the_Sea_of_Fog.jpeg"),
+               "imageUrl", "http://localhost:5443/api/proxy?url=https://upload.wikimedia.org/wikipedia/commons/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg"),
         Map.of("id", "16", "title", "The Sea of Ice", "artist", "Caspar David Friedrich",
                "year", "1823",
                "imageUrl", "http://localhost:5443/api/proxy?url=https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Caspar_David_Friedrich_-_Das_Eismeer_-_Hamburger_Kunsthalle_-_02.jpg/1200px-Caspar_David_Friedrich_-_Das_Eismeer_-_Hamburger_Kunsthalle_-_02.jpg"),
@@ -221,7 +221,7 @@ public class ArtController {
         
         Map.of("id", "57", "title", "Two Laelaps Battling", "artist", "Charles Robert Knight",
               "year", "1897",
-              "imageUrl", "http://localhost:5443/api/proxy?url=https://upload.wikimedia.org/wikipedia/commons/8/8f/Laelaps-Charles_Knight-1897.jpg"),
+              "imageUrl", "http://localhost:5443/api/proxy?url=https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Laelaps-Charles_Knight-1897.jpg/2560px-Laelaps-Charles_Knight-1897.jpg"),
        Map.of("id", "58", "title", "Raft of the Medusa", "artist", "Theodore Gericault",
               "year", "1819",
               "imageUrl", "http://localhost:5443/api/proxy?url=https://cdn.britannica.com/70/43670-050-2E1ED66F/Raft-of-the-Medusa-canvas-Theodore-Gericault-1819.jpg"),
@@ -244,15 +244,32 @@ public class ArtController {
         try {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
-
+    
+            // Make the request to the external image URL
             ResponseEntity<byte[]> response = restTemplate.exchange(
-                url, HttpMethod.GET, null, byte[].class);
-
-            headers.setContentType(response.getHeaders().getContentType());
-
+                url, HttpMethod.GET, null, byte[].class
+            );
+    
+            // Propagate content type (e.g., image/jpeg, image/png)
+            MediaType contentType = response.getHeaders().getContentType();
+            if (contentType == null || !contentType.getType().equals("image")) {
+                throw new IllegalArgumentException("Invalid content type");
+            }
+    
+            headers.setContentType(contentType);
+    
+            // Return the image with proper headers
             return new ResponseEntity<>(response.getBody(), headers, HttpStatus.OK);
+    
+        } catch (IllegalArgumentException e) {
+            // Handle content type issues
+            System.err.println("Error: " + e.getMessage());
+            return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         } catch (Exception e) {
+            // General error handling (e.g., URL not found, timeout)
+            System.err.println("Failed to fetch image from URL: " + url + " | Error: " + e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    
 }
