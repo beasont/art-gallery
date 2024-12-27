@@ -27,18 +27,18 @@ export class MainCarouselComponent implements OnInit, AfterViewInit {
 
   // For adding a comment:
   showCommentForm = false;
+  selectedUserType: 'guest' | 'user' = 'guest';
   commentUsername = '';
+  commentPassword = '';
   commentText = '';
 
   constructor(private artService: ArtService) {}
 
   ngOnInit(): void {
-    // Initial fetch
     this.fetchArtworks();
   }
 
   ngAfterViewInit(): void {
-    // Re-fetch if necessary
     if (!this.artworks || this.artworks.length === 0) {
       this.fetchArtworks();
     }
@@ -106,23 +106,39 @@ export class MainCarouselComponent implements OnInit, AfterViewInit {
 
   toggleCommentForm() {
     this.showCommentForm = !this.showCommentForm;
-    this.commentUsername = '';
-    this.commentText = '';
+    // Reset form fields when toggling
+    if (this.showCommentForm) {
+      this.selectedUserType = 'guest';
+      this.commentUsername = '';
+      this.commentPassword = '';
+      this.commentText = '';
+    }
   }
 
   submitComment() {
     const artId = parseInt(this.artworks[this.currentIndex].id, 10);
-    this.artService.addComment(artId, this.commentText, this.commentUsername || undefined)
-      .subscribe({
-        next: () => {
-          alert('Comment added!');
-          this.showCommentForm = false;
-        },
-        error: (err) => {
-          console.error('Error adding comment:', err);
-          alert('Failed to add comment.');
-        }
-      });
+    if (this.selectedUserType === 'user') {
+      if (!this.commentUsername || !this.commentPassword) {
+        alert('Please enter both username and password.');
+        return;
+      }
+    }
+
+    this.artService.addCommentWithUserOption(
+      artId,
+      this.commentText,
+      this.selectedUserType === 'user' ? this.commentUsername : undefined,
+      this.selectedUserType === 'user' ? this.commentPassword : undefined
+    ).subscribe({
+      next: () => {
+        alert('Comment added!');
+        this.showCommentForm = false;
+      },
+      error: (err) => {
+        console.error('Error adding comment:', err);
+        alert('Failed to add comment.');
+      }
+    });
   }
 
   openNewTab(art: Artwork) {

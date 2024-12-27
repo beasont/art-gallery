@@ -167,7 +167,7 @@ input:focus, textarea:focus, select:focus {
   color: var(--glow-blue) !important; /* neon blue for user */
 }
 
-/* For the "on [Title by Artist]" text => also neon green. */
+/* For the "on [Title by Artist]" text*/
 .comment-art-reference {
   color: var(--matrix-green);
 }
@@ -198,7 +198,7 @@ input:focus, textarea:focus, select:focus {
   margin: 6px 0;
 }
 
-/* HEADINGS: use neon green text shadow */
+/* HEADINGS*/
 .all-artworks-page h2,
 .user-gallery-page h2,
 .carousel-page h2 {
