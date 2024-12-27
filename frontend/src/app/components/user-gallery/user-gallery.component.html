@@ -1,6 +1,7 @@
 <div class="user-gallery-page">
   <h2>User Gallery</h2>
 
+  <!-- Draw Something Button -->
   <button class="draw-btn" (click)="openDrawingWindow()">Draw something!</button>
 
   <!-- Message when there are no user artworks -->
@@ -10,14 +11,38 @@
       Would you like to upload something?
       <a href="#" (click)="toggleUploadForm($event)">Click here!</a>
     </p>
+    <!-- Button to submit artwork when no artworks exist -->
+    <div>
+      <button (click)="toggleUploadForm()">Submit your own artwork</button>
+    </div>
   </div>
 
-  <!-- Button to submit artwork -->
-  <div>
+  <!-- Controls for Sorting, Filtering, and Searching -->
+  <div *ngIf="userArtworks.length > 0" class="controls">
+    <label>Sort by:</label>
+    <select [(ngModel)]="sortKey" (change)="onSortKeyChange(sortKey)">
+      <option value="title">By Title</option>
+      <option value="artist">By Artist</option>
+      <option value="artYear">By Year</option>
+    </select>
+    <button (click)="toggleOrder()">{{ sortOrderAsc ? 'Asc' : 'Desc' }}</button>
+
+    <label>Filter by Artist:</label>
+    <select [(ngModel)]="selectedArtist" (change)="onArtistChange()">
+      <option value="All">All</option>
+      <option *ngFor="let a of artists" [value]="a">{{ a }}</option>
+    </select>
+
+    <input type="text" [(ngModel)]="searchTerm" placeholder="Search..." />
+    <button (click)="onSearch()">Search</button>
+  </div>
+
+  <!-- Button to submit artwork when artworks exist -->
+  <div *ngIf="userArtworks.length > 0">
     <button (click)="toggleUploadForm()">Submit your own artwork</button>
   </div>
 
-  <!-- Upload form -->
+  <!-- Upload Form -->
   <div class="upload-form" *ngIf="showUploadForm">
     <h3>Upload New Artwork</h3>
     <input type="file" (change)="handleFileInput($event)" accept="image/*" required />
@@ -29,7 +54,7 @@
     <button (click)="uploadNewArt()">Upload</button>
   </div>
 
-  <!-- Grid of user artworks -->
+  <!-- Grid of User Artworks -->
   <div *ngIf="userArtworks.length > 0" class="grid-container">
     <div class="grid-item" *ngFor="let art of userArtworks; index as i">
       <img [src]="art.imageUrl" [alt]="art.title" />
@@ -37,18 +62,36 @@
       <p>Artist: {{ art.artist }}</p>
       <p>Year: {{ art.artYear }}</p>
 
-      <!-- Comment form -->
+      <!-- Comment Form -->
       <button (click)="openCommentForm(i)">
         {{ showCommentFormIndex === i ? 'Cancel' : 'Add Comment' }}
       </button>
       <div class="comment-form" *ngIf="showCommentFormIndex === i">
         <div>
-          <label><input type="radio" name="cm{{i}}" [(ngModel)]="commentMode" value="GUEST" checked>Guest</label>
-          <label><input type="radio" name="cm{{i}}" [(ngModel)]="commentMode" value="USER">User</label>
+          <label>
+            <input type="radio" name="cm{{i}}" [(ngModel)]="commentMode" value="GUEST" checked /> Guest
+          </label>
+          <label>
+            <input type="radio" name="cm{{i}}" [(ngModel)]="commentMode" value="USER" /> User
+          </label>
         </div>
-        <input type="text" placeholder="Username" [(ngModel)]="commentUsername" *ngIf="commentMode==='USER'" />
-        <input type="password" placeholder="Password" [(ngModel)]="commentPassword" *ngIf="commentMode==='USER'" />
-        <textarea placeholder="Your comment" [(ngModel)]="commentText" required></textarea>
+        <input
+          type="text"
+          placeholder="Username"
+          [(ngModel)]="commentUsername"
+          *ngIf="commentMode === 'USER'"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          [(ngModel)]="commentPassword"
+          *ngIf="commentMode === 'USER'"
+        />
+        <textarea
+          placeholder="Your comment"
+          [(ngModel)]="commentText"
+          required
+        ></textarea>
         <button (click)="submitComment(i)">Submit</button>
       </div>
 
@@ -59,12 +102,19 @@
       </div>
 
       <!-- Edit Form Modal -->
-      <div class="edit-form-modal" *ngIf="editFormVisible && editArtId === art.id">
+      <div
+        class="edit-form-modal"
+        *ngIf="editFormVisible && editArtId === art.id"
+      >
         <h3>Edit Artwork</h3>
         <input type="text" [(ngModel)]="editTitle" placeholder="Title" required />
         <input type="text" [(ngModel)]="editArtist" placeholder="Artist" required />
         <input type="number" [(ngModel)]="editArtYear" placeholder="Year" required />
-        <input type="file" (change)="handleEditFileInput($event)" accept="image/*" />
+        <input
+          type="file"
+          (change)="handleEditFileInput($event)"
+          accept="image/*"
+        />
         <input type="text" [(ngModel)]="editUsername" placeholder="Username" required />
         <input type="password" [(ngModel)]="editPassword" placeholder="Password" required />
         <button (click)="submitEdit()">Submit</button>
@@ -73,9 +123,35 @@
     </div>
   </div>
 
-  <!-- Navigation buttons -->
+  <!-- Navigation Buttons -->
   <div class="nav">
     <button [routerLink]="['/gallery']">Main Carousel</button>
     <button [routerLink]="['/gallery/all']">View All Main Artworks</button>
+  </div>
+
+  <!-- Drawing Window -->
+  <div class="drawing-window" *ngIf="drawingOpen">
+    <div class="drawing-header">
+      <span><strong>Draw Something!</strong></span>
+      <div>
+        <button (click)="saveDrawing()">Save</button>
+        <button (click)="resetDrawing()">Reset</button>
+        <button (click)="closeDrawingWindow()">X</button>
+      </div>
+    </div>
+    <div class="drawing-tools">
+      <button (click)="setMode('pencil')">Pencil</button>
+      <button (click)="setMode('eraser')">Eraser</button>
+    </div>
+    <canvas
+      class="drawing-canvas"
+      #drawingCanvas
+      width="600"
+      height="340"
+      (mousedown)="onMouseDown($event)"
+      (mousemove)="onMouseMove($event)"
+      (mouseup)="onMouseUp()"
+      (mouseleave)="onMouseLeave()"
+    ></canvas>
   </div>
 </div>
