@@ -53,7 +53,7 @@ Developed with Angular, the frontend delivers a modern, dynamic, and responsive 
 
 ## Technologies Used
 - **Backend**
-  - Java 17
+  - Java 21
   - Spring Boot 3.4.1
   - Spring Data JPA
   - Spring Web
