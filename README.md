@@ -1,5 +1,11 @@
 # Art Gallery Project
 
+### **QUICK SETUP: Run Application with Bash Script**
+- Ensure your directory is set to **art-gallery-master** (`cd art-gallery-master)`.
+- In the root directory, you will find the file **open_project.sh**.
+- Simply run this bash script (`./open_project.sh`) in a Git Bash terminal, and the entire site will be loaded.
+
+
 ## Overview
 ### Purpose
 The Art Gallery Project offers an engaging and interactive platform for exploring a vast collection of famous artworks. Users can contribute their own creations, comment on existing works, or even use an intuitive drawing tool to save custom art directly into the gallery.
@@ -42,9 +48,11 @@ Key Components:
 - **Spring Web** for building RESTful APIs
 - **Spring Security** for authentication and authorization
 - **Maven Wrapper** for simplified dependency management
+- **Spring Cache and Retry Mechanisms* for optimized performance
 
 ### Database
 An H2 in-memory database is used for development and testing, providing quick and lightweight persistence.
+Cache and retry mechanisms are implemented for the proxyImage method in ArtController, leveraging spring-retry and caching.
 
 ### Frontend
 Developed with Angular, the frontend delivers a modern, dynamic, and responsive user experience.
@@ -53,7 +61,7 @@ Developed with Angular, the frontend delivers a modern, dynamic, and responsive 
 
 ## Technologies Used
 - **Backend**
-  - Java 17
+  - Java 21
   - Spring Boot 3.4.1
   - Spring Data JPA
   - Spring Web
@@ -94,7 +102,7 @@ This API provides access to the Art Gallery application functionality, allowing 
 - **POST /api/comments**
   - Adds a new comment to an artwork. Requires the `artId`, `text`, optional `username`, and optional `password` (for authenticated users). If no username is provided, the comment will be associated with a "Guest" account.
 
-- **POST /api/comments/update**
+- **POST /api/comments/edit**
   - Updates an existing comment. Requires the `commentId`, `text`, optional `username`, and optional `password` for authentication. This endpoint uses the HTTP `POST` method for updates.
 
 - **POST /api/comments/delete**
@@ -121,7 +129,7 @@ Some endpoints (such as comment addition and user art management) require authen
 
 ---
 
-## Installation and Setup
+## Setup
 
 ### Prerequisites
 - Java Development Kit (JDK) 17 or Higher
@@ -129,11 +137,7 @@ Some endpoints (such as comment addition and user art management) require authen
 - Node.js and npm
 - Git
 
-### Bash Script
-- In the root directory, you will find the file **open_project.sh**.
-- Simply run this bash script (`./open_project.sh`) in a Git Bash terminal, and the entire site will be loaded.
-
-### Alternative Steps
+### Alternative Steps to the Bash Script
 
 1. **Clone the Repository**
 ```bash
