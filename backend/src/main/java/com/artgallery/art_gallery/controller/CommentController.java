@@ -45,9 +45,8 @@ public class CommentController {
     public ResponseEntity<?> addComment(
             @RequestParam Long artId,
             @RequestParam String text,
-            @RequestParam(required=false) String username,
-            @RequestParam(required=false) String password
-    ) {
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String password) {
         try {
             Comment comment = new Comment();
             comment.setArtId(artId);
@@ -70,11 +69,12 @@ public class CommentController {
             } else if (isInUser) {
                 comment.setArtSource("USER");
             } else {
-                // Possibly we do a quick check if artId is in the static list from ArtController
-                List<Map<String,String>> mainList = ArtController.getInMemoryArtList();
+                // Possibly we do a quick check if artId is in the static list from
+                // ArtController
+                List<Map<String, String>> mainList = ArtController.getInMemoryArtList();
                 boolean foundInMemory = mainList.stream()
-                   .anyMatch(m -> m.get("id").equals(String.valueOf(artId)));
-                if(foundInMemory) {
+                        .anyMatch(m -> m.get("id").equals(String.valueOf(artId)));
+                if (foundInMemory) {
                     comment.setArtSource("MAIN");
                 } else {
                     comment.setArtSource(null);
@@ -95,7 +95,7 @@ public class CommentController {
         List<Map<String, Object>> result = new ArrayList<>();
 
         // We'll fetch the in-memory list once
-        List<Map<String,String>> mainList = ArtController.getInMemoryArtList();
+        List<Map<String, String>> mainList = ArtController.getInMemoryArtList();
 
         for (Comment c : comments) {
             Map<String, Object> out = new HashMap<>();
@@ -116,7 +116,7 @@ public class CommentController {
                     artist = dbArt.getArtist();
                 } else {
                     // check in-memory list
-                    for (Map<String,String> m : mainList) {
+                    for (Map<String, String> m : mainList) {
                         if (m.get("id").equals(String.valueOf(c.getArtId()))) {
                             title = m.get("title");
                             artist = m.get("artist");
@@ -146,10 +146,9 @@ public class CommentController {
     // ============== DELETE COMMENT ==============
     @PostMapping("/delete")
     public ResponseEntity<?> deleteComment(
-        @RequestParam Long commentId,
-        @RequestParam String username,
-        @RequestParam String password
-    ) {
+            @RequestParam Long commentId,
+            @RequestParam String username,
+            @RequestParam String password) {
         try {
             Optional<Comment> optional = commentRepository.findById(commentId);
             if (!optional.isPresent()) {
@@ -171,7 +170,7 @@ public class CommentController {
             }
             commentRepository.delete(c);
             return new ResponseEntity<>("Deleted comment successfully", HttpStatus.OK);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>("Error deleting comment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -179,11 +178,10 @@ public class CommentController {
     // ============== EDIT COMMENT ==============
     @PostMapping("/edit")
     public ResponseEntity<?> editComment(
-        @RequestParam Long commentId,
-        @RequestParam String newText,
-        @RequestParam String username,
-        @RequestParam String password
-    ) {
+            @RequestParam Long commentId,
+            @RequestParam String newText,
+            @RequestParam String username,
+            @RequestParam String password) {
         try {
             Optional<Comment> optional = commentRepository.findById(commentId);
             if (!optional.isPresent()) {
@@ -203,7 +201,7 @@ public class CommentController {
             c.setText(newText);
             commentRepository.save(c);
             return new ResponseEntity<>("Edited comment successfully", HttpStatus.OK);
-        } catch(Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>("Error editing comment: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
