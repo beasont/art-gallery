@@ -1,6 +1,7 @@
 # Art Gallery Project
 
 ### **QUICK SETUP: Run Application with Bash Script**
+- Verify that you are running the backend with the Java version 21 SDK.
 - Ensure your directory is set to **art-gallery-master** (`cd art-gallery-master)`.
 - In the root directory, you will find the file **open_project.sh**.
 - Simply run this bash script (`./open_project.sh`) in a Git Bash terminal, and the entire site will be loaded.
